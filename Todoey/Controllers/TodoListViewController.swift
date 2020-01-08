@@ -28,7 +28,6 @@ class TodoListViewController: SwipeTableViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        
         if let colourHex = selectedCategory?.colour {
             title = selectedCategory!.name
             guard let navBar = navigationController?.navigationBar else { fatalError("Navigation controller does not exist.")
@@ -39,6 +38,20 @@ class TodoListViewController: SwipeTableViewController {
                 navBar.backgroundColor = navBarColour
                 navBar.tintColor = ContrastColorOf(navBarColour, returnFlat: true)
                 searchBar.barTintColor = navBarColour
+                
+                if #available(iOS 13.0, *) {
+                    
+                    let statusBar1 =  UIView()
+                    statusBar1.frame = UIApplication.shared.keyWindow?.windowScene?.statusBarManager!.statusBarFrame as! CGRect
+                    statusBar1.backgroundColor = navBarColour
+                    
+                    UIApplication.shared.keyWindow?.addSubview(statusBar1)
+                    
+                } else {
+                    
+                    let statusBar1: UIView = UIApplication.shared.value(forKey: "statusBar") as! UIView
+                    statusBar1.backgroundColor = navBarColour
+                }
             }
         }
     }
@@ -134,8 +147,7 @@ class TodoListViewController: SwipeTableViewController {
 extension TodoListViewController: UISearchBarDelegate{
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        toDoItems = toDoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "title", ascending: true)
-        tableView.reloadData()
+        
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -144,9 +156,9 @@ extension TodoListViewController: UISearchBarDelegate{
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()
             }
+        } else {
+            toDoItems = toDoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "title", ascending: true)
+            tableView.reloadData()
         }
     }
-    
-    
-    
 }

@@ -13,9 +13,6 @@ import ChameleonFramework
 class CategoryViewController: SwipeTableViewController {
     
     let realm = try! Realm()
-    
-    // Potential namespace clash with OpaquePointer (same name of Category)
-    // Use correct type from dropdown or add backticks to fix e.g., var categories = [`Category`]()
     var categories: Results<Category>?
     
     override func viewDidLoad() {
@@ -29,6 +26,26 @@ class CategoryViewController: SwipeTableViewController {
         guard let navBar = navigationController?.navigationBar else { fatalError("Navigation controller does not exist.")
         }
         navBar.backgroundColor = UIColor(hexString: "#1D9BF6")
+        
+        
+        
+        
+        if #available(iOS 13.0, *) {
+            
+            let statusBar1 =  UIView()
+            statusBar1.frame = UIApplication.shared.keyWindow?.windowScene?.statusBarManager!.statusBarFrame as! CGRect
+            statusBar1.backgroundColor = UIColor(hexString: "#1D9BF6")
+            
+            UIApplication.shared.keyWindow?.addSubview(statusBar1)
+            
+        } else {
+            
+            let statusBar1: UIView = UIApplication.shared.value(forKey: "statusBar") as! UIView
+            statusBar1.backgroundColor = UIColor(hexString: "#1D9BF6")
+        }
+        
+        
+        
     }
     
     //Mark: - Tableview Datasource Methods
@@ -112,7 +129,4 @@ class CategoryViewController: SwipeTableViewController {
             destinationVC.selectedCategory = categories?[indexPath.row]
         }
     }
-    
-    
-    
 }
